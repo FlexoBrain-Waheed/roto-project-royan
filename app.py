@@ -221,11 +221,11 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (3-Layer Supported)")
-    # 🌟 التعديل: إضافة الطبقة الثالثة L3، وتعديل CPP ومنتج الباوتش 🌟
+    # 🌟 التعديل: تغيير Format ليكون Bag بدلاً من Roll ليمر على تقطيع الأكياس مباشرة 🌟
     init_data = [
         {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.0},
         {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 38, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
-        {"Product": "1 Lyr FFS CPP", "Format": "Roll (Slitted)", "Print": True, "L1": "CPP", "M1": 30, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 9.5},
+        {"Product": "1 Lyr CPP Bread Bag", "Format": "Bag", "Print": True, "L1": "CPP", "M1": 30, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 17.0},
         {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 11.0},
         {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
         {"Product": "2 Lyr BOPP + Met", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Met", "M2": 20, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
@@ -257,7 +257,6 @@ with tabs[4]:
     for _, r in df_rec.iterrows():
         is_p, r_ton = r.get("Print", True), t_tons*(r.get("Mix%", 0)/100.0)
         
-        # 🌟 محرك اللامنيشن المطور للطبقة الثالثة 🌟
         m1, m2, m3 = float(r.get("M1", 0)), float(r.get("M2", 0)), float(r.get("M3", 0))
         l1, l2, l3 = str(r.get("L1", "None")), str(r.get("L2", "None")), str(r.get("L3", "None"))
         
@@ -274,7 +273,7 @@ with tabs[4]:
         gross_ton = r_ton / y if y > 0 else r_ton
         
         if is_p: tons_flx += gross_ton
-        if lp > 0: tons_lam += (gross_ton * lp) # لامنيشن لكل تمريرة (Pass)
+        if lp > 0: tons_lam += (gross_ton * lp) 
         if u_slt: tons_slt += gross_ton
         if u_bag: tons_bag += gross_ton
         
@@ -288,7 +287,6 @@ with tabs[4]:
         p2 = mat_db.get(l2, {"p": 0})["p"]
         p3 = mat_db.get(l3, {"p": 0})["p"]
         
-        # حساب تكلفة المواد مع الأخذ في الاعتبار الطبقات المتعددة
         c_mat_ideal = ((g1/1000*p1) + (g2/1000*p2) + (g3/1000*p3) + 
                        (lp*a_gsm/1000*adh_p) + (lp*a_gsm*(lam_solv_ratio/100.0)/1000*solv_p) + 
                        (w_ink/1000*ink_p if is_p else 0) + 

@@ -41,8 +41,8 @@ with tabs[0]:
     
     st.markdown("### 🎨 3. Chemicals & Adhesives")
     ci1, ci2, ci3 = st.columns(3)
-    ink_p = ci1.number_input("Roto Ink/Kg", value=14.0, step=0.5)
-    solv_p = ci2.number_input("Solvent/Kg", value=6.0, step=0.5)
+    ink_p = ci1.number_input("Roto Ink/Kg", value=13.0, step=0.5)
+    solv_p = ci2.number_input("Solvent/Kg", value=5.0, step=0.5)
     adh_p = ci3.number_input("Solvent-Based Adh/Kg", value=14.0, step=0.5)
 
 # --- TAB 2: Production & Chart ---
@@ -203,7 +203,7 @@ with tabs[4]:
     t_tons = c_s1.number_input("🎯 Target Tons", value=4500.0, step=100.0)
     std_w = c_s2.number_input("📏 Web Width (m)", value=1.000, step=0.1)
     w_ink = c_s3.number_input("🎨 Wet Ink (GSM)", value=6.0, step=0.1) 
-    i_loss = c_s4.number_input("💧 Ink Loss %", value=50.0, step=1.0) 
+    i_loss = c_s4.number_input("💧 Ink Loss %", value=70.0, step=1.0) 
     
     st.markdown("#### 🧪 Chemical Ratios (نسب الخلط)")
     c_r1, c_r2, c_r3 = st.columns(3)
@@ -221,7 +221,6 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (3-Layer Supported)")
-    # 🌟 التعديل: تغيير Format ليكون Bag بدلاً من Roll ليمر على تقطيع الأكياس مباشرة 🌟
     init_data = [
         {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.0},
         {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 38, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},

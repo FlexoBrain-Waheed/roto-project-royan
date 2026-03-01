@@ -56,17 +56,19 @@ with tabs[1]:
     st.markdown("### 1. Machine Parameters (Roto Specs)")
     m1, m2 = st.columns(2)
     with m1:
-        r_s = st.number_input("Roto Speed m/min", value=300.0, step=10.0)
+        # 🌟 التعديل: السرعة 400، والكهرباء انخفضت بسبب الغلاية
+        r_s = st.number_input("Roto Speed m/min", value=400.0, step=10.0)
         r_w = st.number_input("Roto Width", value=1.0, step=0.1)
         r_e = st.slider("Roto Eff%", 1, 100, 80)
-        r_k = st.number_input("Roto kW (High due to drying)", value=250.0, step=5.0)
+        r_k = st.number_input("Roto kW (Motors/Blowers only)", value=100.0, step=5.0)
         r_pr = st.number_input("Roto CAPEX", value=10000000.0, step=50000.0)
         r_lm_cap = net_hrs * 60.0 * r_s * (r_e/100.0)
     with m2:
         l_s = st.number_input("Lam Speed", value=400.0, step=10.0)
         l_w = st.number_input("Lam Width", value=1.0, step=0.1) 
         l_e = st.slider("Lam Eff%", 1, 100, 75)
-        l_k = st.number_input("Lam kW (Solvent Based)", value=120.0, step=5.0)
+        # 🌟 التعديل: الكهرباء انخفضت بسبب الغلاية
+        l_k = st.number_input("Lam kW (Motors/Blowers only)", value=50.0, step=5.0)
         l_pr = st.number_input("Lam CAPEX", value=1500000.0, step=50000.0)
         l_lm_cap = net_hrs * 60.0 * l_s * (l_e/100.0)
     
@@ -80,29 +82,35 @@ with tabs[1]:
         s_lm_cap = net_hrs * 60.0 * s_s * (s_e/100.0)
     with m4:
         st.info("Bag Making is Disabled in Roto Default FFS Portfolio, but kept for capacity mapping.")
-        b_q = st.number_input("Bag Mach Qty", value=3, step=1) # 🌟 تم التعديل إلى 3 ماكينات
+        b_q = st.number_input("Bag Mach Qty", value=3, step=1) 
         b_s = st.number_input("Bag Speed m/m", value=75.0, step=5.0)
         b_e = st.slider("Bag Eff%", 1, 100, 85)
         b_k = st.number_input("Bag kW Total", value=75.0, step=5.0)
         b_pr = st.number_input("Bag CAPEX", value=500000.0, step=50000.0)
         b_lm_cap = net_hrs * 60.0 * b_s * b_q * (b_e/100.0)
 
-    u1, u2, u3 = st.columns(3)
-    hng_pr = u1.number_input("Hangar CAPEX", value=4000000.0, step=50000.0)
-    hng_dep_y = u1.number_input("Hangar Depr Yrs", value=25.0, step=1.0)
-    chl_k = u2.number_input("Chiller kW", value=50.0, step=5.0)
-    chl_pr = u2.number_input("Chiller CAPEX", value=500000.0, step=10000.0)
-    chl_dep_y = u2.number_input("Chiller Depr Yrs", value=10.0, step=1.0)
-    cmp_k = u3.number_input("Compressor kW", value=30.0, step=5.0)
-    cmp_pr = u3.number_input("Compressor CAPEX", value=250000.0, step=10000.0)
-    cmp_dep_y = u3.number_input("Comp. Depr Yrs", value=10.0, step=1.0)
+    st.markdown("### 2. Factory Utilities & Thermal Oil Boiler (غلاية الزيت)")
+    # 🌟 التعديل: إضافة قسم غلاية الزيت والديزل 🌟
+    u1, u2, u3, u4 = st.columns(4)
+    blr_pr = u1.number_input("Boiler CAPEX", value=500000.0, step=50000.0)
+    blr_dep_y = u1.number_input("Boiler Depr Yrs", value=10.0, step=1.0)
+    blr_lph = u2.number_input("Boiler Diesel L/hr", value=40.0, step=5.0)
+    dsl_p = u2.number_input("Diesel Price SAR/L", value=0.90, step=0.05)
+    
+    chl_k = u3.number_input("Chiller kW", value=50.0, step=5.0)
+    chl_pr = u3.number_input("Chiller CAPEX", value=500000.0, step=10000.0)
+    cmp_k = u4.number_input("Compressor kW", value=30.0, step=5.0)
+    cmp_pr = u4.number_input("Compressor CAPEX", value=250000.0, step=10000.0)
+
+    hng_pr = st.number_input("Hangar CAPEX", value=4000000.0, step=50000.0)
+    hng_dep_y = st.number_input("Hangar Depr Yrs", value=25.0, step=1.0)
     
     mac_dep_y = st.number_input("Machines Depreciation Yrs", value=10.0, step=1.0)
     dep_r, dep_l, dep_s, dep_b = r_pr/mac_dep_y, l_pr/mac_dep_y, s_pr/mac_dep_y, b_pr/mac_dep_y
-    ann_dep = dep_r + dep_l + dep_s + dep_b + (hng_pr/hng_dep_y) + (chl_pr/chl_dep_y) + (cmp_pr/cmp_dep_y)
-    t_capex = r_pr + l_pr + s_pr + b_pr + hng_pr + chl_pr + cmp_pr
+    ann_dep = dep_r + dep_l + dep_s + dep_b + (hng_pr/hng_dep_y) + (chl_pr/10.0) + (cmp_pr/10.0) + (blr_pr/blr_dep_y)
+    t_capex = r_pr + l_pr + s_pr + b_pr + hng_pr + chl_pr + cmp_pr + blr_pr
 
-    st.markdown("### 📊 2. Machine Capacity Chart")
+    st.markdown("### 📊 3. Machine Capacity Chart")
     chart_gsm = st.number_input("Avg GSM for Chart", value=40.0, step=1.0)
     df_cap = pd.DataFrame({
         "Machine": ["Roto Print", "Lam", "Slitter", "BagMk"],
@@ -115,12 +123,14 @@ with tabs[2]:
     st.subheader("🛠️ Consumables (Rotogravure Cylinders)")
     cc1, cc2 = st.columns(2)
     cyl_pr = cc1.number_input("Engraved Cylinder SAR/Color", value=1200.0, step=100.0)
-    cyl_lf = cc1.number_input("Cylinder Life(m)", value=2000000.0, step=10000.0)
+    # 🌟 التعديل: رفع عمر السلندر إلى 3 مليون متر 🌟
+    cyl_lf = cc1.number_input("Cylinder Life(m)", value=3000000.0, step=10000.0)
     avg_colors = cc1.number_input("Avg Colors per Job", value=6, step=1)
     
     bl_pr = cc2.number_input("Doctor Blade SAR/m", value=15.0, step=1.0)
     bl_qt = cc2.number_input("Blade m/Job", value=10.0, step=1.0)
-    bl_lf = cc2.number_input("Blade Life(m)", value=50000.0, step=1000.0)
+    # 🌟 التعديل: رفع عمر المشرط إلى 150 ألف متر 🌟
+    bl_lf = cc2.number_input("Blade Life(m)", value=150000.0, step=1000.0)
 
 # --- TAB 4: HR & OPEX ---
 with tabs[3]:
@@ -285,8 +295,9 @@ with tabs[4]:
     rr_h, rl_h = t_roto_lm/(r_s*60*(r_e/100)) if r_s*r_e>0 else 0, (t_lam_sqm/std_w)/(l_s*60*(l_e/100)) if l_s*l_e*std_w>0 else 0
     rs_h, rb_h = t_slt_lm/(s_s*60*(s_e/100)) if s_s*s_e>0 else 0, 0
     
+    # 🌟 التعديل: دمج تكلفة استهلاك وقود الديزل للغلاية ضمن تكاليف الـ Overhead 🌟
     pr, pl, ps, pb = rr_h*r_k*kw_p + dep_r + a_cons, rl_h*l_k*kw_p + dep_l, rs_h*s_k*kw_p + dep_s, rb_h*b_k*kw_p + dep_b
-    po = (payroll+adm_exp)*12 + (hng_pr/25) + (chl_pr/10) + (cmp_pr/10) + (net_hrs*(chl_k+cmp_k)*kw_p)
+    po = (payroll+adm_exp)*12 + (hng_pr/25) + (chl_pr/10) + (cmp_pr/10) + (blr_pr/blr_dep_y) + (net_hrs*(chl_k+cmp_k)*kw_p) + (net_hrs*blr_lph*dsl_p)
     r_r, r_l, r_s, r_b, r_o = pr/(tons_flx*1000) if tons_flx>0 else 0, pl/(tons_lam*1000) if tons_lam>0 else 0, ps/(tons_slt*1000) if tons_slt>0 else 0, pb/(tons_bag*1000) if tons_bag>0 else 0, po/(t_tons*1000) if t_tons>0 else 0
 
     dets = []
@@ -402,8 +413,8 @@ with tabs[5]:
         w.sheets['1. المواد الخام'].set_column('A:C', 20)
         
         df_mac_export = pd.DataFrame({
-            "الماكينة": ["طباعة روتو", "لامنيشن", "قص (سلتر)", "تشكيل أكياس"],
-            "قيمة الاستثمار CAPEX (ريال)": [r_pr, l_pr, s_pr, b_pr]
+            "الماكينة": ["طباعة روتو", "لامنيشن", "قص (سلتر)", "تشكيل أكياس", "غلاية زيت حراري"],
+            "قيمة الاستثمار CAPEX (ريال)": [r_pr, l_pr, s_pr, b_pr, blr_pr]
         })
         df_mac_export.to_excel(w, sheet_name='2. الماكينات والإنتاج', index=False)
         w.sheets['2. الماكينات والإنتاج'].set_column('A:B', 25)
@@ -436,7 +447,7 @@ with tabs[5]:
         ws_inv.write('B7', total_rev, n_fmt)
         ws_inv.write('A8', 'الإيرادات السنوية (استرداد السكراب)', h_fmt)
         ws_inv.write('B8', total_scrap_rev, n_fmt)
-        ws_inv.write('A9', 'إجمالي التكاليف السنوية (شاملة الإهلاك)', h_fmt)
+        ws_inv.write('A9', 'إجمالي التكاليف السنوية (شاملة الإهلاك والديزل)', h_fmt)
         ws_inv.write('B9', total_all_cost, n_fmt)
         ws_inv.write('A10', 'صافي الربح قبل الضرائب', h_fmt)
         ws_inv.write('B10', net_profit_before_tax, n_fmt)

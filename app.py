@@ -22,17 +22,15 @@ with tabs[0]:
     d_pet = c4.number_input("PET Den", value=1.40, step=0.01)
     
     st.markdown("### 🧪 2. PE Films (Bought in Rolls)")
-    c5, c6, c7 = st.columns(3)
-    p_pe_ffs = c5.number_input("PE FFS Film SAR", value=3.5, step=0.1)
-    p_pe_shrk = c6.number_input("PE Shrink Film SAR", value=3.5, step=0.1)
-    p_pe_bag = c7.number_input("PE Bag Film SAR", value=3.5, step=0.1)
-    d_pe = st.number_input("PE Density (All)", value=0.92, step=0.01)
+    c5, c6 = st.columns(2)
+    # 🌟 التعديل: صنف واحد فقط للـ PE 🌟
+    p_pe_lam_film = c5.number_input("PE Lamination Film SAR", value=5.5, step=0.1)
+    d_pe = c6.number_input("PE Density (All)", value=0.92, step=0.01)
     
     mat_db = {
         "BOPP Trans": {"p": p_bopp_t, "d": d_bopp_t}, "BOPP Pearl": {"p": p_bopp_p, "d": d_bopp_p},
         "BOPP Met": {"p": p_bopp_m, "d": d_bopp_m}, "PET": {"p": p_pet, "d": d_pet},
-        "PE FFS": {"p": p_pe_ffs, "d": d_pe}, "PE Shrink": {"p": p_pe_shrk, "d": d_pe},
-        "PE Bag": {"p": p_pe_bag, "d": d_pe}, "PE Lam": {"p": 4.5, "d": d_pe}, "None": {"p": 0.0, "d": 0.0}
+        "PE Lam Film": {"p": p_pe_lam_film, "d": d_pe}, "None": {"p": 0.0, "d": 0.0}
     }
     
     st.markdown("### 🎨 3. Chemicals & Adhesives")
@@ -56,7 +54,6 @@ with tabs[1]:
     st.markdown("### 1. Machine Parameters (Roto Specs)")
     m1, m2 = st.columns(2)
     with m1:
-        # 🌟 التعديل: السرعة 400، والكهرباء انخفضت بسبب الغلاية
         r_s = st.number_input("Roto Speed m/min", value=400.0, step=10.0)
         r_w = st.number_input("Roto Width", value=1.0, step=0.1)
         r_e = st.slider("Roto Eff%", 1, 100, 80)
@@ -67,7 +64,6 @@ with tabs[1]:
         l_s = st.number_input("Lam Speed", value=400.0, step=10.0)
         l_w = st.number_input("Lam Width", value=1.0, step=0.1) 
         l_e = st.slider("Lam Eff%", 1, 100, 75)
-        # 🌟 التعديل: الكهرباء انخفضت بسبب الغلاية
         l_k = st.number_input("Lam kW (Motors/Blowers only)", value=50.0, step=5.0)
         l_pr = st.number_input("Lam CAPEX", value=1500000.0, step=50000.0)
         l_lm_cap = net_hrs * 60.0 * l_s * (l_e/100.0)
@@ -81,7 +77,7 @@ with tabs[1]:
         s_pr = st.number_input("Slit CAPEX", value=800000.0, step=50000.0)
         s_lm_cap = net_hrs * 60.0 * s_s * (s_e/100.0)
     with m4:
-        st.info("Bag Making is Disabled in Roto Default FFS Portfolio, but kept for capacity mapping.")
+        st.info("Bag Making is kept for capacity mapping.")
         b_q = st.number_input("Bag Mach Qty", value=3, step=1) 
         b_s = st.number_input("Bag Speed m/m", value=75.0, step=5.0)
         b_e = st.slider("Bag Eff%", 1, 100, 85)
@@ -90,7 +86,6 @@ with tabs[1]:
         b_lm_cap = net_hrs * 60.0 * b_s * b_q * (b_e/100.0)
 
     st.markdown("### 2. Factory Utilities & Thermal Oil Boiler (غلاية الزيت)")
-    # 🌟 التعديل: إضافة قسم غلاية الزيت والديزل 🌟
     u1, u2, u3, u4 = st.columns(4)
     blr_pr = u1.number_input("Boiler CAPEX", value=500000.0, step=50000.0)
     blr_dep_y = u1.number_input("Boiler Depr Yrs", value=10.0, step=1.0)
@@ -123,13 +118,11 @@ with tabs[2]:
     st.subheader("🛠️ Consumables (Rotogravure Cylinders)")
     cc1, cc2 = st.columns(2)
     cyl_pr = cc1.number_input("Engraved Cylinder SAR/Color", value=1200.0, step=100.0)
-    # 🌟 التعديل: رفع عمر السلندر إلى 3 مليون متر 🌟
     cyl_lf = cc1.number_input("Cylinder Life(m)", value=3000000.0, step=10000.0)
     avg_colors = cc1.number_input("Avg Colors per Job", value=6, step=1)
     
     bl_pr = cc2.number_input("Doctor Blade SAR/m", value=15.0, step=1.0)
     bl_qt = cc2.number_input("Blade m/Job", value=10.0, step=1.0)
-    # 🌟 التعديل: رفع عمر المشرط إلى 150 ألف متر 🌟
     bl_lf = cc2.number_input("Blade Life(m)", value=150000.0, step=1000.0)
 
 # --- TAB 4: HR & OPEX ---
@@ -205,17 +198,17 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (Roto Specialized)")
-    st.info("الروتو يتفوق في الأفلام الصلبة مثل BOPP و PET. تم إعداد النسب لتتوافق مع محفظة الاستثمار.")
+    # 🌟 التعديل: تم ربط جميع المنتجات بصنف "PE Lam Film" 🌟
     init_data = [
         {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "Mix%": 10, "Price": 13.0},
         {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 38, "L2": "None", "M2": 0, "Mix%": 10, "Price": 13.5},
-        {"Product": "1 Lyr FFS PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE FFS", "M1": 40, "L2": "None", "M2": 0, "Mix%": 10, "Price": 9.5},
-        {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE FFS", "M1": 40, "L2": "PE Lam", "M2": 50, "Mix%": 10, "Price": 11.0},
-        {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam", "M2": 50, "Mix%": 10, "Price": 13.5},
+        {"Product": "1 Lyr FFS PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "None", "M2": 0, "Mix%": 10, "Price": 9.5},
+        {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "PE Lam Film", "M2": 50, "Mix%": 10, "Price": 11.0},
+        {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam Film", "M2": 50, "Mix%": 10, "Price": 13.5},
         {"Product": "2 Lyr BOPP + Met", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Met", "M2": 20, "Mix%": 10, "Price": 13.5},
         {"Product": "2 Lyr BOPP + BOPP", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Trans", "M2": 20, "Mix%": 16, "Price": 13.5},
-        {"Product": "Plain Shrink Film", "Format": "Jumbo Roll", "Print": False, "L1": "PE Shrink", "M1": 40, "L2": "None", "M2": 0, "Mix%": 9, "Price": 5.0},
-        {"Product": "PE Wicketer Bag", "Format": "Bag", "Print": True, "L1": "PE Bag", "M1": 40, "L2": "None", "M2": 0, "Mix%": 15, "Price": 12.0}
+        {"Product": "Plain PE Film", "Format": "Jumbo Roll", "Print": False, "L1": "PE Lam Film", "M1": 40, "L2": "None", "M2": 0, "Mix%": 9, "Price": 5.0},
+        {"Product": "PE Wicketer Bag", "Format": "Bag", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "None", "M2": 0, "Mix%": 15, "Price": 12.0}
     ]
     
     df_rec = st.data_editor(
@@ -295,7 +288,6 @@ with tabs[4]:
     rr_h, rl_h = t_roto_lm/(r_s*60*(r_e/100)) if r_s*r_e>0 else 0, (t_lam_sqm/std_w)/(l_s*60*(l_e/100)) if l_s*l_e*std_w>0 else 0
     rs_h, rb_h = t_slt_lm/(s_s*60*(s_e/100)) if s_s*s_e>0 else 0, 0
     
-    # 🌟 التعديل: دمج تكلفة استهلاك وقود الديزل للغلاية ضمن تكاليف الـ Overhead 🌟
     pr, pl, ps, pb = rr_h*r_k*kw_p + dep_r + a_cons, rl_h*l_k*kw_p + dep_l, rs_h*s_k*kw_p + dep_s, rb_h*b_k*kw_p + dep_b
     po = (payroll+adm_exp)*12 + (hng_pr/25) + (chl_pr/10) + (cmp_pr/10) + (blr_pr/blr_dep_y) + (net_hrs*(chl_k+cmp_k)*kw_p) + (net_hrs*blr_lph*dsl_p)
     r_r, r_l, r_s, r_b, r_o = pr/(tons_flx*1000) if tons_flx>0 else 0, pl/(tons_lam*1000) if tons_lam>0 else 0, ps/(tons_slt*1000) if tons_slt>0 else 0, pb/(tons_bag*1000) if tons_bag>0 else 0, po/(t_tons*1000) if t_tons>0 else 0

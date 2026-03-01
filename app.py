@@ -83,12 +83,11 @@ with tabs[1]:
         s_pr = st.number_input("Slit CAPEX", value=800000.0, step=50000.0)
         s_lm_cap = net_hrs * 60.0 * s_s * (s_e/100.0)
     with m4:
-        st.info("Bag Making Details (3 Machines)")
+        st.info("Bag Making is kept for Pouch/Bag formats.")
         b_q = st.number_input("Bag Mach Qty", value=3, step=1) 
         b_s = st.number_input("Bag Speed m/m", value=75.0, step=5.0)
         b_e = st.slider("Bag Eff%", 1, 100, 85)
-        # 🌟 تم التعديل: إجمالي الكهرباء لـ 3 ماكينات = 120 كيلو وات 🌟
-        b_k = st.number_input("Bag kW Total (3x40kW)", value=120.0, step=5.0)
+        b_k = st.number_input("Bag kW Total", value=75.0, step=5.0)
         b_pr = st.number_input("Bag CAPEX", value=500000.0, step=50000.0)
         b_lm_cap = net_hrs * 60.0 * b_s * b_q * (b_e/100.0)
 
@@ -222,15 +221,16 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (3-Layer Supported)")
+    # 🌟 التعديل: نسب الإنتاج مطابقة تماماً للصورة المرفقة 🌟
     init_data = [
-        {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.0},
-        {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 15.0},
-        {"Product": "1 Lyr CPP Bread Bag", "Format": "Bag", "Print": True, "L1": "CPP", "M1": 30, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 17.0},
-        {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 11.0},
-        {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
-        {"Product": "2 Lyr BOPP + Met", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Met", "M2": 20, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
-        {"Product": "2 Lyr BOPP + BOPP", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Trans", "M2": 20, "L3": "None", "M3": 0, "Mix%": 16, "Price": 13.5},
-        {"Product": "Stand-up pouches 3 Lyr", "Format": "Bag", "Print": True, "L1": "PET", "M1": 12, "L2": "ALU", "M2": 7, "L3": "PE Lam Film", "M3": 50, "Mix%": 24, "Price": 18.0}
+        {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 15, "Price": 13.0},
+        {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 5, "Price": 15.0},
+        {"Product": "1 Lyr CPP Bread Bag", "Format": "Bag", "Print": True, "L1": "CPP", "M1": 30, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 15, "Price": 17.0},
+        {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 5, "Price": 11.0},
+        {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 15, "Price": 13.5},
+        {"Product": "2 Lyr BOPP + Met", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Met", "M2": 20, "L3": "None", "M3": 0, "Mix%": 28, "Price": 13.5},
+        {"Product": "2 Lyr BOPP + BOPP", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Trans", "M2": 20, "L3": "None", "M3": 0, "Mix%": 15, "Price": 13.5},
+        {"Product": "Stand-up pouches 3 Lyr", "Format": "Bag", "Print": True, "L1": "PET", "M1": 12, "L2": "ALU", "M2": 7, "L3": "PE Lam Film", "M3": 50, "Mix%": 2, "Price": 18.0}
     ]
     
     df_rec = st.data_editor(
@@ -251,8 +251,6 @@ with tabs[4]:
         st.error(f"⚠️ Total Mix: **{total_mix}%** (Please adjust the table above so the sum is exactly 100%)")
     
     w_gsm, t_roto_lm, t_lam_sqm, tons_flx, tons_lam, tons_slt, tons_bag = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-    
-    # 🌟 التعديل: تجميع أطوال الأكياس بشكل صحيح t_bag_lm 🌟
     t_slt_lm, t_bag_lm, temp_dets = 0.0, 0.0, []
     t_ink_k, t_slv_k, t_adh_k = 0.0, 0.0, 0.0
     
@@ -310,7 +308,6 @@ with tabs[4]:
             t_adh_k += (gross_len * std_w * a_gsm * lp) / 1000.0
             t_slv_k += (gross_len * std_w * a_gsm * (lam_solv_ratio/100.0) * lp) / 1000.0 
         
-        # 🌟 التعديل: تجميع أمتار الأكياس 🌟
         if u_slt: t_slt_lm += gross_len
         if u_bag: t_bag_lm += gross_len
             
@@ -326,7 +323,6 @@ with tabs[4]:
     ln_m = (t_tons*1000/w_gsm*1000)/std_w if w_gsm>0 and std_w>0 else 0
     a_cons = ((t_roto_lm/cyl_lf)*cyl_pr*avg_colors if cyl_lf>0 else 0) + ((ln_m/bl_lf)*bl_qt*bl_pr if bl_lf>0 else 0)
     
-    # 🌟 التعديل: حساب ساعات ماكينة الأكياس بناءً على الأمتار الطولية t_bag_lm 🌟
     rr_h, rl_h = t_roto_lm/(r_s*60*(r_e/100)) if r_s*r_e>0 else 0, (t_lam_sqm/std_w)/(l_s*60*(l_e/100)) if l_s*l_e*std_w>0 else 0
     rs_h, rb_h = t_slt_lm/(s_s*60*(s_e/100)) if s_s*s_e>0 else 0, t_bag_lm/(b_s*60*b_q*(b_e/100)) if b_s*b_q*b_e>0 else 0
     

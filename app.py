@@ -34,7 +34,7 @@ with tabs[0]:
     
     st.markdown("### 🎨 3. Chemicals & Adhesives")
     ci1, ci2, ci3 = st.columns(3)
-    ink_p = ci1.number_input("Roto Ink/Kg", value=16.0, step=0.5)
+    ink_p = ci1.number_input("Roto Ink/Kg", value=14.0, step=0.5)
     solv_p = ci2.number_input("Solvent/Kg", value=6.0, step=0.5)
     adh_p = ci3.number_input("Solvent-Based Adh/Kg", value=14.0, step=0.5)
 
@@ -44,8 +44,8 @@ with tabs[1]:
     d_yr = cw1.number_input("Days/Yr", value=300, step=1)
     s_day = cw1.number_input("Shifts/Day", value=2, step=1)
     h_sh = cw1.number_input("Hrs/Shift", value=12, step=1)
-    j_mo = cw2.number_input("Jobs/Mo", value=75, step=1)
-    c_hrs = cw2.number_input("C.O. Hrs", value=3.0, step=0.5) 
+    j_mo = cw2.number_input("Jobs/Mo", value=50, step=1)
+    c_hrs = cw2.number_input("C.O. Hrs", value=2.0, step=0.5) 
     kw_p = cw3.number_input("SAR/kWh", value=0.18, step=0.01)
     net_hrs = (d_yr * s_day * h_sh) - (j_mo * 12 * c_hrs)
     st.success(f"✅ Net Running Hours / Year: {net_hrs:,.0f}")
@@ -57,14 +57,14 @@ with tabs[1]:
         r_w = st.number_input("Roto Width", value=1.0, step=0.1)
         r_e = st.slider("Roto Eff%", 1, 100, 80)
         r_k = st.number_input("Roto kW (Motors/Blowers only)", value=100.0, step=5.0)
-        r_pr = st.number_input("Roto CAPEX", value=10000000.0, step=50000.0)
+        r_pr = st.number_input("Roto CAPEX", value=10500000.0, step=50000.0)
         r_lm_cap = net_hrs * 60.0 * r_s * (r_e/100.0)
     with m2:
         l_s = st.number_input("Lam Speed", value=400.0, step=10.0)
         l_w = st.number_input("Lam Width", value=1.0, step=0.1) 
         l_e = st.slider("Lam Eff%", 1, 100, 75)
         l_k = st.number_input("Lam kW (Motors/Blowers only)", value=50.0, step=5.0)
-        l_pr = st.number_input("Lam CAPEX", value=1500000.0, step=50000.0)
+        l_pr = st.number_input("Lam CAPEX", value=2500000.0, step=50000.0)
         l_lm_cap = net_hrs * 60.0 * l_s * (l_e/100.0)
     
     m3, m4 = st.columns(2)
@@ -86,10 +86,10 @@ with tabs[1]:
 
     st.markdown("### 2. Factory Utilities & Thermal Oil Boiler (غلاية الزيت)")
     u1, u2, u3, u4 = st.columns(4)
-    blr_pr = u1.number_input("Boiler CAPEX", value=500000.0, step=50000.0)
+    blr_pr = u1.number_input("Boiler CAPEX", value=2500000.0, step=50000.0)
     blr_dep_y = u1.number_input("Boiler Depr Yrs", value=10.0, step=1.0)
     blr_lph = u2.number_input("Boiler Diesel L/hr", value=40.0, step=5.0)
-    dsl_p = u2.number_input("Diesel Price SAR/L", value=0.90, step=0.05)
+    dsl_p = u2.number_input("Diesel Price SAR/L", value=1.79, step=0.05)
     
     chl_k = u3.number_input("Chiller kW", value=50.0, step=5.0)
     chl_pr = u3.number_input("Chiller CAPEX", value=500000.0, step=10000.0)
@@ -185,7 +185,6 @@ with tabs[4]:
     w_ink = c_s3.number_input("🎨 Wet Ink (GSM)", value=6.0, step=0.1) 
     i_loss = c_s4.number_input("💧 Ink Loss %", value=50.0, step=1.0) 
     
-    # 🌟 التعديل: إضافة مؤشر نسبة السولفنت للحبر (1:2) 🌟
     st.markdown("#### 🧪 Chemical Ratios (نسب الخلط)")
     c_r1, c_r2, c_r3 = st.columns(3)
     roto_solv_ratio = c_r1.number_input("Roto Solvent Ratio (Solvent/Ink)", value=2.0, step=0.1, help="2.0 means 1 kg ink requires 2 kg solvent")
@@ -258,7 +257,6 @@ with tabs[4]:
         g2 = r["M2"]*mat_db[str(r["L2"])]["d"]
         tg = g1 + g2 + (lp*a_gsm) + (d_ink if is_p else 0)
         
-        # 🌟 التعديل هنا: تطبيق النسبة (roto_solv_ratio) بدلاً من 0.5 🌟
         c_mat_ideal = ((g1/1000*mat_db[str(r["L1"])]["p"]) + (g2/1000*mat_db[str(r["L2"])]["p"]) + (lp*a_gsm/1000*adh_p) + (lp*a_gsm*(lam_solv_ratio/100.0)/1000*solv_p) + (w_ink/1000*ink_p if is_p else 0) + (w_ink*roto_solv_ratio/1000*solv_p if is_p else 0))/(tg/1000.0) if tg>0 else 0
         
         gross_mat_cost = c_mat_ideal / y if y > 0 else c_mat_ideal
@@ -271,7 +269,6 @@ with tabs[4]:
         if is_p: 
             t_roto_lm += gross_len
             t_ink_k += (gross_len * std_w * w_ink) / 1000.0
-            # 🌟 التعديل هنا: استهلاك السولفنت الشهري للحبر 🌟
             t_slv_k += (gross_len * std_w * w_ink * roto_solv_ratio) / 1000.0
         if lp > 0: 
             t_lam_sqm += (gross_len*std_w*lp)

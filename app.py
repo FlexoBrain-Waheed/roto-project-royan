@@ -83,11 +83,12 @@ with tabs[1]:
         s_pr = st.number_input("Slit CAPEX", value=800000.0, step=50000.0)
         s_lm_cap = net_hrs * 60.0 * s_s * (s_e/100.0)
     with m4:
-        st.info("Bag Making is kept for Pouch/Bag formats.")
+        st.info("Bag Making Details (3 Machines)")
         b_q = st.number_input("Bag Mach Qty", value=3, step=1) 
         b_s = st.number_input("Bag Speed m/m", value=75.0, step=5.0)
         b_e = st.slider("Bag Eff%", 1, 100, 85)
-        b_k = st.number_input("Bag kW Total", value=75.0, step=5.0)
+        # 🌟 تم التعديل: إجمالي الكهرباء لـ 3 ماكينات = 120 كيلو وات 🌟
+        b_k = st.number_input("Bag kW Total (3x40kW)", value=120.0, step=5.0)
         b_pr = st.number_input("Bag CAPEX", value=500000.0, step=50000.0)
         b_lm_cap = net_hrs * 60.0 * b_s * b_q * (b_e/100.0)
 
@@ -221,7 +222,6 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (3-Layer Supported)")
-    # 🌟 التعديل: السعر أصبح 15 لمنتج 1 Lyr BOPP Pearl 🌟
     init_data = [
         {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.0},
         {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 15.0},
@@ -251,7 +251,9 @@ with tabs[4]:
         st.error(f"⚠️ Total Mix: **{total_mix}%** (Please adjust the table above so the sum is exactly 100%)")
     
     w_gsm, t_roto_lm, t_lam_sqm, tons_flx, tons_lam, tons_slt, tons_bag = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-    t_slt_lm, temp_dets = 0.0, []
+    
+    # 🌟 التعديل: تجميع أطوال الأكياس بشكل صحيح t_bag_lm 🌟
+    t_slt_lm, t_bag_lm, temp_dets = 0.0, 0.0, []
     t_ink_k, t_slv_k, t_adh_k = 0.0, 0.0, 0.0
     
     for _, r in df_rec.iterrows():
@@ -307,7 +309,11 @@ with tabs[4]:
             t_lam_sqm += (gross_len*std_w*lp)
             t_adh_k += (gross_len * std_w * a_gsm * lp) / 1000.0
             t_slv_k += (gross_len * std_w * a_gsm * (lam_solv_ratio/100.0) * lp) / 1000.0 
+        
+        # 🌟 التعديل: تجميع أمتار الأكياس 🌟
         if u_slt: t_slt_lm += gross_len
+        if u_bag: t_bag_lm += gross_len
+            
         w_gsm += tg*(r.get("Mix%", 0)/100.0)
         
         temp_dets.append({
@@ -320,8 +326,9 @@ with tabs[4]:
     ln_m = (t_tons*1000/w_gsm*1000)/std_w if w_gsm>0 and std_w>0 else 0
     a_cons = ((t_roto_lm/cyl_lf)*cyl_pr*avg_colors if cyl_lf>0 else 0) + ((ln_m/bl_lf)*bl_qt*bl_pr if bl_lf>0 else 0)
     
+    # 🌟 التعديل: حساب ساعات ماكينة الأكياس بناءً على الأمتار الطولية t_bag_lm 🌟
     rr_h, rl_h = t_roto_lm/(r_s*60*(r_e/100)) if r_s*r_e>0 else 0, (t_lam_sqm/std_w)/(l_s*60*(l_e/100)) if l_s*l_e*std_w>0 else 0
-    rs_h, rb_h = t_slt_lm/(s_s*60*(s_e/100)) if s_s*s_e>0 else 0, tons_bag/(b_s*60*b_q*(b_e/100)*std_w/1000) if tons_bag>0 and b_s*b_q*b_e>0 else 0
+    rs_h, rb_h = t_slt_lm/(s_s*60*(s_e/100)) if s_s*s_e>0 else 0, t_bag_lm/(b_s*60*b_q*(b_e/100)) if b_s*b_q*b_e>0 else 0
     
     pr, pl, ps, pb = rr_h*r_k*kw_p + dep_r + a_cons, rl_h*l_k*kw_p + dep_l, rs_h*s_k*kw_p + dep_s, rb_h*b_k*kw_p + dep_b
     po = (payroll+adm_exp)*12 + (hng_pr/25) + (chl_pr/10) + (cmp_pr/10) + (blr_pr/blr_dep_y) + (net_hrs*(chl_k+cmp_k)*kw_p) + (net_hrs*blr_lph*dsl_p)
@@ -372,8 +379,8 @@ with tabs[4]:
     if t_slt_lm <= s_lm_cap: cb3.success(f"Slit (M m)\n\nCap: {s_lm_cap/1000000:,.2f}\n\nReq: {t_slt_lm/1000000:,.2f}")
     else: cb3.error(f"Slit (M m)\n\nCap: {s_lm_cap/1000000:,.2f}\n\nReq: {t_slt_lm/1000000:,.2f}")
     
-    if tons_bag <= b_lm_cap: cb4.success(f"BagMk (M m)\n\nCap: {b_lm_cap/1000000:,.2f}\n\nReq: {tons_bag/1000000:,.2f}")
-    else: cb4.error(f"BagMk (M m)\n\nCap: {b_lm_cap/1000000:,.2f}\n\nReq: {tons_bag/1000000:,.2f}")
+    if t_bag_lm <= b_lm_cap: cb4.success(f"BagMk (M m)\n\nCap: {b_lm_cap/1000000:,.2f}\n\nReq: {t_bag_lm/1000000:,.2f}")
+    else: cb4.error(f"BagMk (M m)\n\nCap: {b_lm_cap/1000000:,.2f}\n\nReq: {t_bag_lm/1000000:,.2f}")
 
 # --- TAB 6 & 7: P&L Summary & SMART EXCEL EXPORT ---
 with tabs[5]:

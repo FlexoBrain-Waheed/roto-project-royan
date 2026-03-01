@@ -221,10 +221,10 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (3-Layer Supported)")
-    # 🌟 التعديل: سماكة BOPP Pearl أصبحت 35 🌟
+    # 🌟 التعديل: السعر أصبح 15 لمنتج 1 Lyr BOPP Pearl 🌟
     init_data = [
         {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.0},
-        {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
+        {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 15.0},
         {"Product": "1 Lyr CPP Bread Bag", "Format": "Bag", "Print": True, "L1": "CPP", "M1": 30, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 17.0},
         {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 11.0},
         {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},

@@ -130,6 +130,7 @@ with tabs[3]:
     
     h1, h2, h3 = st.columns(3)
     with h1:
+        st.markdown("**Production (Direct Labor)**")
         eng_q = st.number_input("Engineers Qty", value=3, step=1)
         eng_s = st.number_input("Engineer Salary", value=8000, step=500)
         opr_q = st.number_input("Operators Qty", value=6, step=1)
@@ -137,13 +138,16 @@ with tabs[3]:
         wrk_q = st.number_input("Workers Qty", value=10, step=1)
         wrk_s = st.number_input("Worker Salary", value=2500, step=500)
     with h2:
+        st.markdown("**Admin & Support (Indirect)**")
         adm_q = st.number_input("Admin/Sales Qty", value=5, step=1)
         adm_s = st.number_input("Admin Salary", value=8000, step=500)
-        sau_q = st.number_input("Saudi Qty", value=5, step=1)
+        sau_q = st.number_input("Saudi (Nitaqat) Qty", value=5, step=1)
         sau_s = st.number_input("Saudi Salary", value=4000, step=500)
     with h3:
-        hidden_cost_pct = st.slider("Hidden Benefits %", 0, 50, 20)
+        st.markdown("**Govt Fees & Benefits**")
+        hidden_cost_pct = st.slider("Hidden Benefits % (Over Base Salary)", 0, 50, 20)
 
+    st.markdown("#### 🏢 2. General & Admin Expenses (SG&A)")
     o1, o2, o3 = st.columns(3)
     rent_exp = o1.number_input("Land Rent & Licenses", value=8000, step=500)
     sales_exp = o1.number_input("Sales & Mktg", value=12000, step=500)
@@ -165,6 +169,16 @@ with tabs[3]:
     payroll = base_payroll + gov_benefits_cost 
     
     total_headcount = eng_q + opr_q + wrk_q + adm_q + sau_q
+    saudization_pct = (sau_q / total_headcount) if total_headcount > 0 else 0
+    
+    # 🌟 تم إرجاع مربعات لوحة القيادة هنا 🌟
+    st.markdown("---")
+    st.markdown("#### 📊 HR & OPEX Dashboard")
+    hm1, hm2, hm3, hm4 = st.columns(4)
+    hm1.metric("👥 Total Headcount", f"{total_headcount} Emp")
+    hm2.metric("🇸🇦 Saudization %", f"{saudization_pct:.1%}")
+    hm3.metric("💸 Monthly Payroll", f"SAR {payroll:,.0f}")
+    hm4.metric("🏢 Monthly Admin Exp", f"SAR {adm_exp:,.0f}")
     
     df_hr = pd.DataFrame({
         "Category": ["Engineers", "Operators", "Workers", "Admin", "Saudis", "Gov Fees/Benefits", 

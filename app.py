@@ -7,7 +7,7 @@ tabs = st.tabs(["1. Materials", "2. Production", "3. Consumables", "4. HR & OPEX
 
 # --- TAB 1: Materials ---
 with tabs[0]:
-    st.markdown("### 📦 1. Ready Films (Bought in Rolls)")
+    st.markdown("### 📦 1. Ready Films & Foils (Bought in Rolls)")
     c1, c2, c3, c4 = st.columns(4)
     p_bopp_t = c1.number_input("BOPP Trans SAR", value=6.0, step=0.1)
     d_bopp_t = c1.number_input("BOPP Trans Den", value=0.91, step=0.01)
@@ -21,14 +21,21 @@ with tabs[0]:
     p_pet = c4.number_input("PET SAR", value=6.3, step=0.1)
     d_pet = c4.number_input("PET Den", value=1.40, step=0.01)
     
-    st.markdown("### 🧪 2. PE Films (Bought in Rolls)")
-    c5, c6 = st.columns(2)
-    p_pe_lam_film = c5.number_input("PE Lamination Film SAR", value=5.5, step=0.1)
-    d_pe = c6.number_input("PE Density (All)", value=0.92, step=0.01)
+    st.markdown("### 🧪 2. Specialized Films & Foils")
+    c5, c6, c7 = st.columns(3)
+    p_cpp = c5.number_input("CPP Film SAR (5800/Ton)", value=5.8, step=0.1)
+    d_cpp = c5.number_input("CPP Den", value=0.91, step=0.01)
+    
+    p_al = c6.number_input("ALU Foil SAR", value=17.0, step=0.1)
+    d_al = c6.number_input("ALU Den", value=2.70, step=0.01)
+    
+    p_pe_lam_film = c7.number_input("PE Lamination Film SAR", value=5.5, step=0.1)
+    d_pe = c7.number_input("PE Density", value=0.92, step=0.01)
     
     mat_db = {
         "BOPP Trans": {"p": p_bopp_t, "d": d_bopp_t}, "BOPP Pearl": {"p": p_bopp_p, "d": d_bopp_p},
         "BOPP Met": {"p": p_bopp_m, "d": d_bopp_m}, "PET": {"p": p_pet, "d": d_pet},
+        "CPP": {"p": p_cpp, "d": d_cpp}, "ALU": {"p": p_al, "d": d_al},
         "PE Lam Film": {"p": p_pe_lam_film, "d": d_pe}, "None": {"p": 0.0, "d": 0.0}
     }
     
@@ -76,7 +83,7 @@ with tabs[1]:
         s_pr = st.number_input("Slit CAPEX", value=800000.0, step=50000.0)
         s_lm_cap = net_hrs * 60.0 * s_s * (s_e/100.0)
     with m4:
-        st.info("Bag Making is kept for capacity mapping.")
+        st.info("Bag Making is kept for Pouch/Bag formats.")
         b_q = st.number_input("Bag Mach Qty", value=3, step=1) 
         b_s = st.number_input("Bag Speed m/m", value=75.0, step=5.0)
         b_e = st.slider("Bag Eff%", 1, 100, 85)
@@ -171,7 +178,6 @@ with tabs[3]:
     total_headcount = eng_q + opr_q + wrk_q + adm_q + sau_q
     saudization_pct = (sau_q / total_headcount) if total_headcount > 0 else 0
     
-    # 🌟 تم إرجاع مربعات لوحة القيادة هنا 🌟
     st.markdown("---")
     st.markdown("#### 📊 HR & OPEX Dashboard")
     hm1, hm2, hm3, hm4 = st.columns(4)
@@ -190,7 +196,7 @@ with tabs[3]:
     
     st.plotly_chart(px.pie(df_hr, names="Category", values="Monthly Cost", title="Total Monthly OPEX Breakdown", hole=0.4), use_container_width=True)
 
-# --- TAB 5: Recipes & Detailed Costing (ROTO FFS) ---
+# --- TAB 5: Recipes & Detailed Costing (ROTO FFS & 3-LAYER POUCHES) ---
 with tabs[4]:
     st.markdown("### ⚙️ 1. Global Production Settings (Roto)")
     c_s1, c_s2, c_s3, c_s4 = st.columns(4)
@@ -214,17 +220,17 @@ with tabs[4]:
     w_fin = cw3.number_input("Finishing Waste %", value=1.5, step=0.5)
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
-    st.markdown("### 📋 3. Smart Product Portfolio (Roto Specialized)")
+    st.markdown("### 📋 3. Smart Product Portfolio (3-Layer Supported)")
+    # 🌟 التعديل: إضافة الطبقة الثالثة L3، وتعديل CPP ومنتج الباوتش 🌟
     init_data = [
-        {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "Mix%": 10, "Price": 13.0},
-        {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 38, "L2": "None", "M2": 0, "Mix%": 10, "Price": 13.5},
-        {"Product": "1 Lyr FFS PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "None", "M2": 0, "Mix%": 10, "Price": 9.5},
-        {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "PE Lam Film", "M2": 50, "Mix%": 10, "Price": 11.0},
-        {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam Film", "M2": 50, "Mix%": 10, "Price": 13.5},
-        {"Product": "2 Lyr BOPP + Met", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Met", "M2": 20, "Mix%": 10, "Price": 13.5},
-        {"Product": "2 Lyr BOPP + BOPP", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Trans", "M2": 20, "Mix%": 16, "Price": 13.5},
-        {"Product": "Plain PE Film", "Format": "Jumbo Roll", "Print": False, "L1": "PE Lam Film", "M1": 40, "L2": "None", "M2": 0, "Mix%": 9, "Price": 5.0},
-        {"Product": "PE Wicketer Bag", "Format": "Bag", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "None", "M2": 0, "Mix%": 15, "Price": 12.0}
+        {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.0},
+        {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 38, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
+        {"Product": "1 Lyr FFS CPP", "Format": "Roll (Slitted)", "Print": True, "L1": "CPP", "M1": 30, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 10, "Price": 9.5},
+        {"Product": "2 Lyr PE + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PE Lam Film", "M1": 40, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 11.0},
+        {"Product": "2 Lyr PET + PE", "Format": "Roll (Slitted)", "Print": True, "L1": "PET", "M1": 12, "L2": "PE Lam Film", "M2": 50, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
+        {"Product": "2 Lyr BOPP + Met", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Met", "M2": 20, "L3": "None", "M3": 0, "Mix%": 10, "Price": 13.5},
+        {"Product": "2 Lyr BOPP + BOPP", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 20, "L2": "BOPP Trans", "M2": 20, "L3": "None", "M3": 0, "Mix%": 16, "Price": 13.5},
+        {"Product": "Stand-up pouches 3 Lyr", "Format": "Bag", "Print": True, "L1": "PET", "M1": 12, "L2": "ALU", "M2": 7, "L3": "PE Lam Film", "M3": 50, "Mix%": 24, "Price": 18.0}
     ]
     
     df_rec = st.data_editor(
@@ -249,8 +255,13 @@ with tabs[4]:
     t_ink_k, t_slv_k, t_adh_k = 0.0, 0.0, 0.0
     
     for _, r in df_rec.iterrows():
-        is_p, r_ton = r.get("Print", True), t_tons*(r["Mix%"]/100.0)
-        lp = 1 if r["M2"] > 0 and str(r["L2"]) != "None" else 0
+        is_p, r_ton = r.get("Print", True), t_tons*(r.get("Mix%", 0)/100.0)
+        
+        # 🌟 محرك اللامنيشن المطور للطبقة الثالثة 🌟
+        m1, m2, m3 = float(r.get("M1", 0)), float(r.get("M2", 0)), float(r.get("M3", 0))
+        l1, l2, l3 = str(r.get("L1", "None")), str(r.get("L2", "None")), str(r.get("L3", "None"))
+        
+        lp = (1 if m2 > 0 and l2 != "None" else 0) + (1 if m3 > 0 and l3 != "None" else 0)
         
         u_slt = r.get("Format") == "Roll (Slitted)"
         u_bag = r.get("Format") == "Bag"
@@ -263,15 +274,25 @@ with tabs[4]:
         gross_ton = r_ton / y if y > 0 else r_ton
         
         if is_p: tons_flx += gross_ton
-        if lp > 0: tons_lam += (gross_ton * lp)
+        if lp > 0: tons_lam += (gross_ton * lp) # لامنيشن لكل تمريرة (Pass)
         if u_slt: tons_slt += gross_ton
         if u_bag: tons_bag += gross_ton
         
-        g1 = r["M1"]*mat_db[str(r["L1"])]["d"]
-        g2 = r["M2"]*mat_db[str(r["L2"])]["d"]
-        tg = g1 + g2 + (lp*a_gsm) + (d_ink if is_p else 0)
+        g1 = m1 * mat_db.get(l1, {"d": 0})["d"]
+        g2 = m2 * mat_db.get(l2, {"d": 0})["d"]
+        g3 = m3 * mat_db.get(l3, {"d": 0})["d"]
         
-        c_mat_ideal = ((g1/1000*mat_db[str(r["L1"])]["p"]) + (g2/1000*mat_db[str(r["L2"])]["p"]) + (lp*a_gsm/1000*adh_p) + (lp*a_gsm*(lam_solv_ratio/100.0)/1000*solv_p) + (w_ink/1000*ink_p if is_p else 0) + (w_ink*roto_solv_ratio/1000*solv_p if is_p else 0))/(tg/1000.0) if tg>0 else 0
+        tg = g1 + g2 + g3 + (lp*a_gsm) + (d_ink if is_p else 0)
+        
+        p1 = mat_db.get(l1, {"p": 0})["p"]
+        p2 = mat_db.get(l2, {"p": 0})["p"]
+        p3 = mat_db.get(l3, {"p": 0})["p"]
+        
+        # حساب تكلفة المواد مع الأخذ في الاعتبار الطبقات المتعددة
+        c_mat_ideal = ((g1/1000*p1) + (g2/1000*p2) + (g3/1000*p3) + 
+                       (lp*a_gsm/1000*adh_p) + (lp*a_gsm*(lam_solv_ratio/100.0)/1000*solv_p) + 
+                       (w_ink/1000*ink_p if is_p else 0) + 
+                       (w_ink*roto_solv_ratio/1000*solv_p if is_p else 0)) / (tg/1000.0) if tg>0 else 0
         
         gross_mat_cost = c_mat_ideal / y if y > 0 else c_mat_ideal
         scrap_rev_kg = ((1.0/y) - 1.0) * scrap_p if y > 0 else 0
@@ -289,7 +310,7 @@ with tabs[4]:
             t_adh_k += (gross_len * std_w * a_gsm * lp) / 1000.0
             t_slv_k += (gross_len * std_w * a_gsm * (lam_solv_ratio/100.0) * lp) / 1000.0 
         if u_slt: t_slt_lm += gross_len
-        w_gsm += tg*(r["Mix%"]/100.0)
+        w_gsm += tg*(r.get("Mix%", 0)/100.0)
         
         temp_dets.append({
             "Product":r["Product"], "Format":r["Format"], "Tons":r_ton, "GSM":tg, 
@@ -302,7 +323,7 @@ with tabs[4]:
     a_cons = ((t_roto_lm/cyl_lf)*cyl_pr*avg_colors if cyl_lf>0 else 0) + ((ln_m/bl_lf)*bl_qt*bl_pr if bl_lf>0 else 0)
     
     rr_h, rl_h = t_roto_lm/(r_s*60*(r_e/100)) if r_s*r_e>0 else 0, (t_lam_sqm/std_w)/(l_s*60*(l_e/100)) if l_s*l_e*std_w>0 else 0
-    rs_h, rb_h = t_slt_lm/(s_s*60*(s_e/100)) if s_s*s_e>0 else 0, 0
+    rs_h, rb_h = t_slt_lm/(s_s*60*(s_e/100)) if s_s*s_e>0 else 0, tons_bag/(b_s*60*b_q*(b_e/100)*std_w/1000) if tons_bag>0 and b_s*b_q*b_e>0 else 0
     
     pr, pl, ps, pb = rr_h*r_k*kw_p + dep_r + a_cons, rl_h*l_k*kw_p + dep_l, rs_h*s_k*kw_p + dep_s, rb_h*b_k*kw_p + dep_b
     po = (payroll+adm_exp)*12 + (hng_pr/25) + (chl_pr/10) + (cmp_pr/10) + (blr_pr/blr_dep_y) + (net_hrs*(chl_k+cmp_k)*kw_p) + (net_hrs*blr_lph*dsl_p)
@@ -342,7 +363,7 @@ with tabs[4]:
     st.plotly_chart(px.bar(df_melt, x="Product", y="Cost (SAR/Kg)", color="Cost Component", title="Where does the money go?", text_auto=".2f"), use_container_width=True)
 
     st.markdown("### 🚦 6. Line Balancing (Bottleneck Check)")
-    cb1, cb2, cb3 = st.columns(3)
+    cb1, cb2, cb3, cb4 = st.columns(4)
     
     if t_roto_lm <= r_lm_cap: cb1.success(f"Roto (M m)\n\nCap: {r_lm_cap/1000000:,.2f}\n\nReq: {t_roto_lm/1000000:,.2f}")
     else: cb1.error(f"Roto (M m)\n\nCap: {r_lm_cap/1000000:,.2f}\n\nReq: {t_roto_lm/1000000:,.2f}")
@@ -352,6 +373,9 @@ with tabs[4]:
 
     if t_slt_lm <= s_lm_cap: cb3.success(f"Slit (M m)\n\nCap: {s_lm_cap/1000000:,.2f}\n\nReq: {t_slt_lm/1000000:,.2f}")
     else: cb3.error(f"Slit (M m)\n\nCap: {s_lm_cap/1000000:,.2f}\n\nReq: {t_slt_lm/1000000:,.2f}")
+    
+    if tons_bag <= b_lm_cap: cb4.success(f"BagMk (M m)\n\nCap: {b_lm_cap/1000000:,.2f}\n\nReq: {tons_bag/1000000:,.2f}")
+    else: cb4.error(f"BagMk (M m)\n\nCap: {b_lm_cap/1000000:,.2f}\n\nReq: {tons_bag/1000000:,.2f}")
 
 # --- TAB 6 & 7: P&L Summary & SMART EXCEL EXPORT ---
 with tabs[5]:

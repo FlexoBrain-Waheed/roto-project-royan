@@ -23,7 +23,6 @@ with tabs[0]:
     
     st.markdown("### 🧪 2. PE Films (Bought in Rolls)")
     c5, c6 = st.columns(2)
-    # 🌟 التعديل: صنف واحد فقط للـ PE 🌟
     p_pe_lam_film = c5.number_input("PE Lamination Film SAR", value=5.5, step=0.1)
     d_pe = c6.number_input("PE Density (All)", value=0.92, step=0.01)
     
@@ -180,14 +179,19 @@ with tabs[3]:
 # --- TAB 5: Recipes & Detailed Costing (ROTO FFS) ---
 with tabs[4]:
     st.markdown("### ⚙️ 1. Global Production Settings (Roto)")
-    c_s1, c_s2, c_s3, c_s4, c_s5 = st.columns(5)
+    c_s1, c_s2, c_s3, c_s4 = st.columns(4)
     t_tons = c_s1.number_input("🎯 Target Tons", value=4500.0, step=100.0)
     std_w = c_s2.number_input("📏 Web Width (m)", value=1.000, step=0.1)
-    w_ink = c_s3.number_input("🎨 Wet Ink", value=6.0, step=0.1) 
+    w_ink = c_s3.number_input("🎨 Wet Ink (GSM)", value=6.0, step=0.1) 
     i_loss = c_s4.number_input("💧 Ink Loss %", value=50.0, step=1.0) 
-    a_gsm = c_s5.number_input("🍯 Adh GSM (Solvent Base)", value=2.5, step=0.1)
     
-    lam_solv_ratio = st.number_input("Lam Solvent Ratio (Solvent to Adhesive %)", value=40.0, step=5.0)
+    # 🌟 التعديل: إضافة مؤشر نسبة السولفنت للحبر (1:2) 🌟
+    st.markdown("#### 🧪 Chemical Ratios (نسب الخلط)")
+    c_r1, c_r2, c_r3 = st.columns(3)
+    roto_solv_ratio = c_r1.number_input("Roto Solvent Ratio (Solvent/Ink)", value=2.0, step=0.1, help="2.0 means 1 kg ink requires 2 kg solvent")
+    a_gsm = c_r2.number_input("🍯 Adh GSM (Solvent Base)", value=2.5, step=0.1)
+    lam_solv_ratio = c_r3.number_input("Lam Solvent Ratio (Solvent to Adhesive %)", value=40.0, step=5.0)
+    
     d_ink = w_ink * (1.0 - (i_loss/100.0))
     
     st.markdown("### ♻️ 2. Scrap Engine")
@@ -198,7 +202,6 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (Roto Specialized)")
-    # 🌟 التعديل: تم ربط جميع المنتجات بصنف "PE Lam Film" 🌟
     init_data = [
         {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "Mix%": 10, "Price": 13.0},
         {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 38, "L2": "None", "M2": 0, "Mix%": 10, "Price": 13.5},
@@ -255,7 +258,8 @@ with tabs[4]:
         g2 = r["M2"]*mat_db[str(r["L2"])]["d"]
         tg = g1 + g2 + (lp*a_gsm) + (d_ink if is_p else 0)
         
-        c_mat_ideal = ((g1/1000*mat_db[str(r["L1"])]["p"]) + (g2/1000*mat_db[str(r["L2"])]["p"]) + (lp*a_gsm/1000*adh_p) + (lp*a_gsm*(lam_solv_ratio/100.0)/1000*solv_p) + (w_ink/1000*ink_p if is_p else 0) + (w_ink*0.5/1000*solv_p if is_p else 0))/(tg/1000.0) if tg>0 else 0
+        # 🌟 التعديل هنا: تطبيق النسبة (roto_solv_ratio) بدلاً من 0.5 🌟
+        c_mat_ideal = ((g1/1000*mat_db[str(r["L1"])]["p"]) + (g2/1000*mat_db[str(r["L2"])]["p"]) + (lp*a_gsm/1000*adh_p) + (lp*a_gsm*(lam_solv_ratio/100.0)/1000*solv_p) + (w_ink/1000*ink_p if is_p else 0) + (w_ink*roto_solv_ratio/1000*solv_p if is_p else 0))/(tg/1000.0) if tg>0 else 0
         
         gross_mat_cost = c_mat_ideal / y if y > 0 else c_mat_ideal
         scrap_rev_kg = ((1.0/y) - 1.0) * scrap_p if y > 0 else 0
@@ -267,7 +271,8 @@ with tabs[4]:
         if is_p: 
             t_roto_lm += gross_len
             t_ink_k += (gross_len * std_w * w_ink) / 1000.0
-            t_slv_k += (gross_len * std_w * w_ink * 0.5) / 1000.0
+            # 🌟 التعديل هنا: استهلاك السولفنت الشهري للحبر 🌟
+            t_slv_k += (gross_len * std_w * w_ink * roto_solv_ratio) / 1000.0
         if lp > 0: 
             t_lam_sqm += (gross_len*std_w*lp)
             t_adh_k += (gross_len * std_w * a_gsm * lp) / 1000.0

@@ -87,13 +87,14 @@ with tabs[1]:
         b_q = st.number_input("Bag Mach Qty", value=3, step=1) 
         b_s = st.number_input("Bag Speed m/m", value=75.0, step=5.0)
         b_e = st.slider("Bag Eff%", 1, 100, 85)
-        b_k = st.number_input("Bag kW Total", value=75.0, step=5.0)
+        b_k = st.number_input("Bag kW Total", value=120.0, step=5.0)
         b_pr = st.number_input("Bag CAPEX", value=500000.0, step=50000.0)
         b_lm_cap = net_hrs * 60.0 * b_s * b_q * (b_e/100.0)
 
     st.markdown("### 2. Factory Utilities & Thermal Oil Boiler (غلاية الزيت)")
     u1, u2, u3, u4 = st.columns(4)
-    blr_pr = u1.number_input("Boiler CAPEX", value=2500000.0, step=50000.0)
+    # 🌟 تم التعديل: السعر أصبح 250 ألف بدلاً من 2.5 مليون 🌟
+    blr_pr = u1.number_input("Boiler CAPEX", value=250000.0, step=50000.0)
     blr_dep_y = u1.number_input("Boiler Depr Yrs", value=10.0, step=1.0)
     blr_lph = u2.number_input("Boiler Diesel L/hr", value=40.0, step=5.0)
     dsl_p = u2.number_input("Diesel Price SAR/L", value=1.79, step=0.05)
@@ -221,7 +222,6 @@ with tabs[4]:
     scrap_p = cw4.number_input("Scrap Resale (SAR/Kg)", value=1.5, step=0.1)
     
     st.markdown("### 📋 3. Smart Product Portfolio (3-Layer Supported)")
-    # 🌟 التعديل: نسب الإنتاج مطابقة تماماً للصورة المرفقة 🌟
     init_data = [
         {"Product": "1 Lyr BOPP Trans", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Trans", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 15, "Price": 13.0},
         {"Product": "1 Lyr BOPP Pearl", "Format": "Roll (Slitted)", "Print": True, "L1": "BOPP Pearl", "M1": 35, "L2": "None", "M2": 0, "L3": "None", "M3": 0, "Mix%": 5, "Price": 15.0},
